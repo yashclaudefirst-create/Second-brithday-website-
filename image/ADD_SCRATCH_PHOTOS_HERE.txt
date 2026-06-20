@@ -1,0 +1,5 @@
+scratch1.jpg, scratch2.jpg, scratch3.jpg are currently SAMPLE PLACEHOLDERS
+(plain pink/gold cards with text) so you can test the scratch mechanic.
+
+Before sending to the client, replace each one with the real surprise
+photo, keeping the same filenames.
