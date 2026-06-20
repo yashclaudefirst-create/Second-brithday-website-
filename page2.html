@@ -107,6 +107,19 @@
         .letter-name{
             font-family:'Dancing Script',cursive;font-size:34px;
             color:#6b3a3a;text-align:center;margin:4px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .signature-img {
+            width: 160px;
+            height: auto;
+            max-height: 100px;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+            filter: contrast(1.5) brightness(1.1) grayscale(1);
+            margin: -10px 0;
         }
         .divider{
             width:60px;height:2px;
@@ -320,7 +333,7 @@
     <div class="letter-box">
         <button class="letter-close" id="closeLetter">✕</button>
         <span class="letter-flowers">🌸🌷🌹💐🌺</span>
-        <div class="letter-name">Sk. Arif 💌</div>
+        <div class="letter-name"><img src="images/signature.jpg" alt="Sk. Arif Signature" class="signature-img"> 💌</div>
         <div class="divider"></div>
         <div class="letter-text">
             <p>Happy Birthday, my dearest. ❤️</p>
