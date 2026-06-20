@@ -1,0 +1,6 @@
+voice.mp3 and song.mp3 are currently SAMPLE PLACEHOLDER TONES (short test
+chimes) so you can confirm the play buttons and waveform/CD-spin actually
+work.
+
+Before sending to the client, replace each one with the real voice
+message / song, keeping the same filenames.
