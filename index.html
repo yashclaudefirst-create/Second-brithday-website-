@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💌 A Special Surprise for Sk. Arif</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%;overflow:hidden;background:#1a0a0a;font-family:'Lato',sans-serif}
+
+        /* ── SCENE ── */
+        .scene{position:relative;width:100vw;height:100vh;overflow:hidden;user-select:none}
+        .scene-photo{width:100%;height:100%;object-fit:cover;object-position:center;display:block;pointer-events:none}
+
+        /* ── HINT BAR ── */
+        .hint{
+            position:absolute;top:16px;left:50%;transform:translateX(-50%);
+            background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);
+            padding:9px 24px;border-radius:40px;font-size:13px;color:#6b3a3a;
+            border:1px solid rgba(255,182,193,0.5);z-index:30;white-space:nowrap;
+            animation:hintIn 0.8s ease,hintOut 0.5s ease 5s forwards;
+            box-shadow:0 4px 20px rgba(255,100,130,0.15);
+        }
+        @keyframes hintIn{from{opacity:0;transform:translateX(-50%) translateY(-16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+        @keyframes hintOut{to{opacity:0;pointer-events:none}}
+
+        /* ── HOTSPOTS ── */
+        .hotspot{
+            position:absolute;cursor:pointer;z-index:10;border-radius:14px;
+            transition:background 0.3s,box-shadow 0.3s;
+        }
+        .hotspot:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+
+        .tip{
+            position:absolute;bottom:-40px;left:50%;
+            transform:translateX(-50%) translateY(8px);
+            background:rgba(255,255,255,0.96);backdrop-filter:blur(8px);
+            padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+            color:#6b3a3a;white-space:nowrap;opacity:0;
+            transition:opacity 0.3s,transform 0.3s;
+            border:1px solid rgba(255,182,193,0.5);pointer-events:none;z-index:40;
+            box-shadow:0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        /* ── COFFEE ZONE ── */
+        .coffee-zone{
+            top:4%;left:2%;width:25%;height:32%;
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+        }
+        .coffee-zone:hover{background:rgba(139,90,43,0.08)}
+
+        .coffee-inner{display:flex;flex-direction:column;align-items:center;pointer-events:none;width:100%}
+
+        /* Steam */
+        .steam{display:flex;gap:7px;margin-bottom:6px;transition:opacity 1s}
+        .steam i{
+            display:block;width:5px;height:26px;border-radius:6px;
+            background:linear-gradient(to top,rgba(255,255,255,0.6),transparent);
+            animation:steamUp 1.8s ease-in-out infinite;
+        }
+        .steam i:nth-child(2){animation-delay:0.4s;height:20px}
+        .steam i:nth-child(3){animation-delay:0.8s}
+        @keyframes steamUp{
+            0%{transform:translateY(0) scaleX(1);opacity:0.8}
+            50%{transform:translateY(-14px) scaleX(1.5);opacity:0.4}
+            100%{transform:translateY(-28px) scaleX(0.8);opacity:0}
+        }
+
+        /* Coffee circle */
+        .cup-circle{
+            width:55%;aspect-ratio:1;border-radius:50%;overflow:hidden;
+            position:relative;border:3px solid rgba(255,255,255,0.2);background:#2d1108;
+        }
+        .cup-fill{
+            position:absolute;bottom:0;left:0;width:100%;height:100%;
+            background:linear-gradient(160deg,#7a4528 0%,#aa6f44 40%,#4a2210 100%);
+            transition:height 0.7s cubic-bezier(0.4,0,0.2,1);
+        }
+        .cup-fill::after{
+            content:'';position:absolute;top:5px;left:18%;right:18%;
+            height:8px;background:rgba(255,255,255,0.2);border-radius:50%;
+        }
+        .cup-empty{
+            position:absolute;inset:0;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;opacity:0;
+            transition:opacity 0.6s;pointer-events:none;
+        }
+        .cup-empty.show{opacity:1}
+        .cup-empty span{font-size:22px}
+        .cup-empty p{font-size:9px;color:rgba(255,255,255,0.7);margin-top:3px}
+
+        /* Sip badge */
+        .sip-badge{
+            position:absolute;bottom:6px;right:6px;
+            background:rgba(100,50,20,0.85);color:#fff;
+            font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;
+            pointer-events:none;transition:all 0.3s;
+        }
+
+        /* Ripple */
+        .ripple{
+            position:absolute;border-radius:50%;
+            background:rgba(255,255,255,0.35);
+            animation:rip 0.65s ease-out forwards;
+            pointer-events:none;transform:translate(-50%,-50%);z-index:50;
+        }
+        @keyframes rip{0%{width:0;height:0;opacity:1}100%{width:90px;height:90px;opacity:0}}
+
+        /* ── MAIL ZONE ── */
+        .mail-zone{top:36%;left:22%;width:48%;height:30%}
+        .mail-zone:hover{
+            background:rgba(255,215,180,0.07);
+            box-shadow:0 0 30px rgba(255,182,193,0.3),inset 0 0 20px rgba(255,200,180,0.05);
+        }
+        .mail-zone .tip{bottom:-44px}
+
+        /* ── LOADING OVERLAY ── */
+        .loader{
+            position:fixed;inset:0;
+            background:radial-gradient(ellipse at center,#2d0820 0%,#0f0520 50%,#050f1f 100%);
+            z-index:200;display:flex;align-items:center;justify-content:center;
+            opacity:0;pointer-events:none;transition:opacity 0.5s;
+        }
+        .loader.on{opacity:1;pointer-events:all}
+
+        .petals{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:201}
+        .petal{position:absolute;animation:fall linear forwards;opacity:0}
+        @keyframes fall{
+            0%{opacity:1;transform:translateY(-60px) rotate(0deg) scale(1)}
+            100%{opacity:0.2;transform:translateY(110vh) rotate(540deg) scale(0.6)}
+        }
+
+        .loader-content{text-align:center;z-index:202;position:relative}
+        .loader-icon{
+            font-size:88px;display:block;margin-bottom:18px;
+            filter:drop-shadow(0 0 24px rgba(255,100,160,0.7));
+            animation:envPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes envPulse{
+            0%,100%{transform:scale(1) rotate(-2deg)}
+            50%{transform:scale(1.1) rotate(2deg)}
+        }
+        .loader-title{
+            font-family:'Dancing Script',cursive;
+            font-size:clamp(22px,4vw,40px);color:#ffd4e8;
+            text-shadow:0 0 24px rgba(255,130,180,0.5);margin-bottom:24px;
+        }
+        .dots{display:flex;gap:10px;justify-content:center}
+        .dots span{
+            width:11px;height:11px;border-radius:50%;
+            background:linear-gradient(135deg,#ff91b4,#ff5588);
+            animation:bounce 0.9s ease-in-out infinite;
+            box-shadow:0 2px 8px rgba(255,85,136,0.4);
+        }
+        .dots span:nth-child(2){animation-delay:0.2s}
+        .dots span:nth-child(3){animation-delay:0.4s}
+        @keyframes bounce{0%,100%{transform:translateY(0);opacity:0.5}50%{transform:translateY(-14px);opacity:1}}
+    </style>
+</head>
+<body>
+<div class="scene">
+    <img src="images/photo1.jpg" alt="Special Flatlay" class="scene-photo">
+
+    <div class="hint">✨ Click the coffee to sip it • Touch the envelope to open your surprise!</div>
+
+    <!-- ☕ COFFEE HOTSPOT -->
+    <div class="hotspot coffee-zone" id="coffeeZone">
+        <div class="coffee-inner">
+            <div class="steam" id="steam">
+                <i></i><i></i><i></i>
+            </div>
+            <div class="cup-circle">
+                <div class="cup-fill" id="cupFill"></div>
+                <div class="cup-empty" id="cupEmpty">
+                    <span>☕</span>
+                    <p>All done!</p>
+                </div>
+            </div>
+        </div>
+        <div class="sip-badge" id="sipBadge">5 sips left</div>
+        <div class="tip">☕ Click to sip!</div>
+    </div>
+
+    <!-- 💌 MAIL / ENVELOPE HOTSPOT -->
+    <div class="hotspot mail-zone" id="mailZone">
+        <div class="tip">💌 Touch to open your surprise!</div>
+    </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div class="loader" id="loader">
+    <div class="petals" id="petals"></div>
+    <div class="loader-content">
+        <span class="loader-icon">💌</span>
+        <h2 class="loader-title">Opening your surprise...</h2>
+        <div class="dots"><span></span><span></span><span></span></div>
+    </div>
+</div>
+
+<script>
+/* ── COFFEE ── */
+const coffeeZone = document.getElementById('coffeeZone');
+const cupFill    = document.getElementById('cupFill');
+const cupEmpty   = document.getElementById('cupEmpty');
+const steam      = document.getElementById('steam');
+const sipBadge   = document.getElementById('sipBadge');
+
+const MAX = 5;
+let sips = MAX;
+
+coffeeZone.addEventListener('click', function(e) {
+    if (sips <= 0) return;
+    sips--;
+
+    // Drain coffee
+    cupFill.style.height = (sips / MAX * 100) + '%';
+
+    // Reduce steam
+    steam.style.opacity = Math.max(0, sips / MAX);
+
+    // Badge
+    sipBadge.textContent = sips > 0 ? sips + ' sip' + (sips > 1 ? 's' : '') + ' left' : 'All done!';
+
+    // Ripple
+    const rect = coffeeZone.getBoundingClientRect();
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    r.style.left = (e.clientX - rect.left) + 'px';
+    r.style.top  = (e.clientY - rect.top)  + 'px';
+    coffeeZone.appendChild(r);
+    setTimeout(() => r.remove(), 700);
+
+    // Sparkles
+    for (let i = 0; i < 5; i++) {
+        const sp = document.createElement('div');
+        sp.style.cssText = `
+            position:absolute;pointer-events:none;z-index:60;font-size:14px;
+            left:${e.clientX - rect.left}px;top:${e.clientY - rect.top}px;
+            animation:sparkOut 0.8s ease-out forwards;
+            --tx:${(Math.random()-0.5)*60}px;--ty:${(Math.random()-1)*60}px;
+        `;
+        sp.textContent = ['✨','⭐','💫','🌟','✦'][i];
+        coffeeZone.appendChild(sp);
+        setTimeout(() => sp.remove(), 900);
+    }
+
+    if (sips === 0) {
+        cupEmpty.classList.add('show');
+        steam.style.opacity = '0';
+    }
+});
+
+/* Inject sparkle keyframe */
+const styleEl = document.createElement('style');
+styleEl.textContent = `@keyframes sparkOut{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.2)}}`;
+document.head.appendChild(styleEl);
+
+/* ── MAIL ── */
+const mailZone = document.getElementById('mailZone');
+const loader   = document.getElementById('loader');
+const petals   = document.getElementById('petals');
+
+mailZone.addEventListener('click', function() {
+    loader.classList.add('on');
+
+    const emojis = ['🌸','🌷','🌹','💐','🌺','🌼','🩷','💕','✨'];
+    for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+            const p = document.createElement('div');
+            p.className = 'petal';
+            p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            p.style.cssText = `
+                left:${Math.random()*100}vw;
+                top:-50px;
+                font-size:${14 + Math.random()*16}px;
+                animation-duration:${2 + Math.random()*2}s;
+                animation-delay:${Math.random()*0.5}s;
+            `;
+            petals.appendChild(p);
+            setTimeout(() => p.remove(), 3500);
+        }, i * 70);
+    }
+
+    setTimeout(() => { window.location.href = 'page2.html'; }, 2800);
+});
+</script>
+</body>
+</html>

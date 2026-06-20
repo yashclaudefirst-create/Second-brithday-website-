@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 Your Birthday Surprise, Sk. Arif!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%;background:#0a1a22;font-family:'Lato',sans-serif}
+
+        /* ── SCENE ──
+           New reference image is tall & narrow (underwater collage),
+           so the scene scrolls vertically instead of cropping with cover. */
+        .scene{position:relative;width:100%;max-width:520px;margin:0 auto;overflow:visible;user-select:none}
+        .scene-photo{width:100%;height:auto;display:block;pointer-events:none}
+
+        /* ── HINT ── */
+        .hint{
+            position:fixed;top:14px;left:50%;transform:translateX(-50%);
+            background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);
+            padding:8px 18px;border-radius:40px;font-size:11.5px;font-weight:500;color:#6b3a3a;
+            border:1px solid rgba(255,182,193,0.5);z-index:30;white-space:nowrap;
+            animation:hintIn 0.8s ease,hintOut 0.5s ease 6s forwards;
+            box-shadow:0 4px 20px rgba(255,100,130,0.2);
+            max-width:92vw;overflow:hidden;text-overflow:ellipsis;
+        }
+        @keyframes hintIn{from{opacity:0;transform:translateX(-50%) translateY(-14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+        @keyframes hintOut{to{opacity:0;pointer-events:none}}
+
+        /* ── HOTSPOTS ── */
+        .hotspot{position:absolute;cursor:pointer;z-index:10;border-radius:14px;transition:background 0.3s,box-shadow 0.3s}
+        .hotspot:hover{background:rgba(255,220,235,0.07);box-shadow:0 0 22px rgba(255,182,193,0.25)}
+        .hotspot:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+        .tip{
+            position:absolute;bottom:-40px;left:50%;
+            transform:translateX(-50%) translateY(8px);
+            background:rgba(255,255,255,0.96);backdrop-filter:blur(8px);
+            padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+            color:#4a3060;white-space:nowrap;opacity:0;
+            transition:opacity 0.3s,transform 0.3s;pointer-events:none;z-index:40;
+            border:1px solid rgba(200,150,255,0.4);box-shadow:0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        /* Hotspot positions — measured against the new underwater collage image */
+        /* ── LETTER (pink envelope, top-left) ── */
+        .letter-zone{top:14.99%;left:4.83%;width:42.90%;height:19.22%}
+
+        /* ── CD / SONG CARD (was Spotify card, now reuses CD modal) ── */
+        .cd-zone{top:18.83%;left:53.08%;width:41.29%;height:3.46%;border-radius:10px}
+
+        /* ── SCRATCH TILES (5 letters: C A B D E) ── */
+        .scratch-zone{position:absolute;cursor:pointer;z-index:10;border-radius:10px;transition:background 0.3s,box-shadow 0.3s}
+        .scratch-zone:hover{background:rgba(255,220,235,0.08);box-shadow:0 0 22px rgba(255,182,193,0.25)}
+        .scratch-zone:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+        .tile-c{top:50.35%;left:2.14%;width:24.66%;height:11.15%}
+        .tile-a{top:45.35%;left:28.95%;width:23.32%;height:9.61%}
+        .tile-b{top:47.27%;left:56.30%;width:28.95%;height:9.99%}
+        .tile-d{top:57.26%;left:41.55%;width:24.93%;height:9.61%}
+        .tile-e{top:57.65%;left:67.02%;width:24.93%;height:9.99%}
+
+        /* ── MAP CARD ("Our tiny world") ── */
+        .map-zone{top:71.64%;left:4.02%;width:48.26%;height:7.38%;border-radius:14px}
+
+        /* ── VOICE NOTE (plays inline, no modal) ── */
+        .voice-zone{top:82.48%;left:2.14%;width:57.37%;height:3.46%;border-radius:30px}
+        .voice-zone.playing{background:rgba(120,255,180,0.12);box-shadow:0 0 18px rgba(120,255,180,0.3)}
+
+        /* ════════════════════════════════════════
+           LETTER MODAL
+        ════════════════════════════════════════ */
+        .modal{
+            position:fixed;inset:0;z-index:200;
+            display:flex;align-items:center;justify-content:center;
+            background:rgba(5,10,20,0.85);backdrop-filter:blur(12px);
+            opacity:0;pointer-events:none;transition:opacity 0.4s;
+        }
+        .modal.open{opacity:1;pointer-events:all}
+
+        .letter-box{
+            width:min(92vw,520px);
+            background:linear-gradient(145deg,#fffdf5,#fff8f0);
+            border-radius:20px;
+            padding:36px 40px 32px;
+            box-shadow:0 30px 80px rgba(0,0,0,0.55),0 0 0 1px rgba(255,200,180,0.25);
+            max-height:88vh;overflow-y:auto;position:relative;
+            border-top:4px solid #ffb6c1;
+            animation:letterOpen 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        @keyframes letterOpen{
+            0%{transform:translateY(60px) scale(0.85);opacity:0}
+            60%{transform:translateY(-8px) scale(1.02)}
+            100%{transform:translateY(0) scale(1);opacity:1}
+        }
+        .letter-box::-webkit-scrollbar{width:5px}
+        .letter-box::-webkit-scrollbar-thumb{background:#ffb6c1;border-radius:10px}
+
+        .letter-close{
+            position:absolute;top:14px;right:18px;
+            background:none;border:none;font-size:22px;cursor:pointer;
+            color:#bbb;transition:color 0.3s;line-height:1;
+        }
+        .letter-close:hover{color:#e74c3c}
+
+        .letter-flowers{font-size:26px;letter-spacing:4px;display:block;text-align:center;margin-bottom:4px}
+        .letter-name{
+            font-family:'Dancing Script',cursive;font-size:34px;
+            color:#6b3a3a;text-align:center;margin:4px 0;
+        }
+        .divider{
+            width:60px;height:2px;
+            background:linear-gradient(to right,transparent,#ffb6c1,transparent);
+            margin:12px auto 22px;
+        }
+        .letter-text{
+            font-size:15px;line-height:2;color:#4a3030;
+        }
+        .letter-text p{margin-bottom:10px}
+        .letter-sign{
+            font-family:'Dancing Script',cursive;font-size:22px;
+            color:#6b3a3a;text-align:right;margin-top:20px;
+        }
+
+        /* ════════════════════════════════════════
+           SCRATCH CARD MODAL
+        ════════════════════════════════════════ */
+        .scratch-modal-box{
+            width:min(92vw,340px);
+            background:linear-gradient(145deg,#fff0fa,#f5e8ff);
+            border-radius:24px;padding:30px 28px 24px;
+            box-shadow:0 30px 80px rgba(0,0,0,0.55),0 0 0 1px rgba(200,150,255,0.25);
+            text-align:center;position:relative;
+            animation:popIn 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        @keyframes popIn{
+            0%{transform:scale(0.7) rotateY(-12deg);opacity:0}
+            100%{transform:scale(1) rotateY(0);opacity:1}
+        }
+        .scratch-title{
+            font-family:'Dancing Script',cursive;font-size:26px;
+            color:#6b3a8a;margin-bottom:18px;
+        }
+        .scratch-wrap{
+            position:relative;display:inline-block;
+            border-radius:14px;overflow:hidden;
+            box-shadow:0 8px 24px rgba(0,0,0,0.2);
+        }
+        .scratch-reveal{
+            width:280px;height:200px;
+            display:flex;align-items:center;justify-content:center;
+            background:linear-gradient(135deg,#ffd4e8,#ffe8f4);
+        }
+        .reveal-placeholder{text-align:center;padding:20px}
+        .reveal-placeholder.hidden{display:none}
+        .reveal-placeholder .big-icon{font-size:50px;display:block;margin-bottom:8px}
+        .reveal-placeholder p{font-size:13px;color:#6b3a6a;font-weight:500}
+        .scratch-reveal img{width:100%;height:100%;object-fit:cover;display:none}
+        .scratch-reveal img.visible{display:block}
+        canvas.sc{
+            position:absolute;top:0;left:0;
+            cursor:crosshair;touch-action:none;border-radius:14px;
+        }
+        .scratch-hint{font-size:12px;color:#9b7aab;margin-top:12px;letter-spacing:0.3px}
+
+        /* ════════════════════════════════════════
+           CD MODAL
+        ════════════════════════════════════════ */
+        .cd-box{
+            width:min(92vw,360px);
+            background:linear-gradient(135deg,#0d0d1a,#1a1a2e);
+            border-radius:28px;padding:38px 44px 32px;text-align:center;
+            box-shadow:0 30px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(150,100,255,0.2);
+            animation:popIn 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+            position:relative;
+        }
+        .cd-label{font-family:'Dancing Script',cursive;font-size:22px;color:#d4b8ff;margin-bottom:4px}
+        .cd-sub{font-size:12px;color:rgba(212,184,255,0.45);margin-bottom:26px}
+
+        .disc-wrap{position:relative;width:200px;height:200px;margin:0 auto 26px}
+        .cd-disc{
+            width:200px;height:200px;border-radius:50%;
+            background:conic-gradient(
+                #1a0a2e 0deg,#6b35b8 40deg,#1a0a2e 80deg,
+                #9b59e8 120deg,#1a0a2e 160deg,#7b45d8 200deg,
+                #1a0a2e 240deg,#8b4de0 280deg,#1a0a2e 320deg,
+                #6b35b8 360deg
+            );
+            border:4px solid #2a1a4a;
+            box-shadow:0 0 40px rgba(107,53,184,0.55),inset 0 0 30px rgba(0,0,0,0.5);
+            position:relative;display:flex;align-items:center;justify-content:center;
+        }
+        .cd-disc.spin{animation:cdSpin 2s linear infinite}
+        @keyframes cdSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .cd-center{
+            width:44px;height:44px;border-radius:50%;
+            background:radial-gradient(circle,#2a1a4a,#0d0d1a);
+            border:2px solid rgba(150,100,255,0.3);
+        }
+        .cd-needle{
+            position:absolute;top:-8px;right:-8px;
+            width:70px;height:70px;
+            transform-origin:90% 10%;
+            transition:transform 0.5s ease;
+        }
+        .needle-arm{
+            width:3px;height:70px;
+            background:linear-gradient(to bottom,#c0a060,#a08040);
+            border-radius:4px;
+            transform:rotate(30deg);margin-left:65px;margin-top:6px;
+        }
+        .cd-needle.on .needle-arm{transform:rotate(45deg)}
+
+        .cd-play-btn{
+            width:64px;height:64px;border-radius:50%;
+            background:linear-gradient(135deg,#6b35b8,#9b65e8);
+            border:none;cursor:pointer;font-size:24px;
+            display:inline-flex;align-items:center;justify-content:center;
+            box-shadow:0 4px 24px rgba(107,53,184,0.6);
+            transition:transform 0.3s,box-shadow 0.3s;color:#fff;
+        }
+        .cd-play-btn:hover{transform:scale(1.12);box-shadow:0 6px 32px rgba(107,53,184,0.8)}
+        .cd-note{font-size:11px;color:rgba(212,184,255,0.35);margin-top:10px}
+
+        /* ════════════════════════════════════════
+           MAP MODAL ("Our tiny world")
+        ════════════════════════════════════════ */
+        .map-box{
+            width:min(92vw,380px);
+            background:linear-gradient(145deg,#fffdf5,#f0f9f5);
+            border-radius:22px;padding:0 0 26px;
+            box-shadow:0 30px 80px rgba(0,0,0,0.55),0 0 0 1px rgba(150,210,200,0.3);
+            text-align:center;position:relative;overflow:hidden;
+            animation:popIn 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        .map-photo-wrap{width:100%;height:220px;overflow:hidden;position:relative}
+        .map-photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+        .map-title{
+            font-family:'Dancing Script',cursive;font-size:26px;
+            color:#3a6b5a;margin:18px 0 4px;
+        }
+        .map-caption{font-size:13px;color:#5a7a6a;padding:0 28px;line-height:1.6}
+        .map-x{
+            position:absolute;top:14px;right:18px;
+            background:rgba(0,0,0,0.35);border:none;border-radius:50%;
+            width:30px;height:30px;font-size:18px;cursor:pointer;
+            color:#fff;line-height:1;z-index:5;transition:background 0.3s;
+        }
+        .map-x:hover{background:rgba(220,80,80,0.85)}
+
+        /* ════════════════════════════════════════
+           INLINE VOICE PLAY ICON (no modal)
+        ════════════════════════════════════════ */
+        .voice-icon{
+            position:absolute;top:50%;left:6%;transform:translateY(-50%);
+            width:26px;height:26px;border-radius:50%;
+            background:rgba(255,255,255,0.0);
+            display:flex;align-items:center;justify-content:center;
+            pointer-events:none;font-size:13px;color:#2a8a5a;
+            z-index:11;
+        }
+
+        /* shared close btn */
+        .x-btn{
+            position:absolute;top:14px;right:18px;
+            background:none;border:none;font-size:22px;cursor:pointer;
+            color:rgba(255,255,255,0.35);transition:color 0.3s;line-height:1;z-index:5;
+        }
+        .x-btn:hover{color:rgba(255,100,100,0.9)}
+    </style>
+</head>
+<body>
+<div class="scene">
+    <img src="images/photo2.jpg" alt="Birthday Underwater Surprise" class="scene-photo">
+
+    <div class="hint">💌 Letter • 💿 CD • 🎴 Scratch tiles • 🗺️ Our world • 🎙️ Voice</div>
+
+    <!-- 📝 LETTER ZONE -->
+    <div class="hotspot letter-zone" id="letterZone">
+        <div class="tip">💌 Click to read your letter!</div>
+    </div>
+
+    <!-- 💿 CD / SONG CARD -->
+    <div class="hotspot cd-zone" id="cdZone">
+        <div class="tip">💿 Play the CD!</div>
+    </div>
+
+    <!-- 🎴 SCRATCH TILES (5 letters: C A B D E) -->
+    <div class="scratch-zone tile-c" data-card="1">
+        <div class="tip">🎴 Scratch C!</div>
+    </div>
+    <div class="scratch-zone tile-a" data-card="2">
+        <div class="tip">🎴 Scratch A!</div>
+    </div>
+    <div class="scratch-zone tile-b" data-card="3">
+        <div class="tip">🎴 Scratch B!</div>
+    </div>
+    <div class="scratch-zone tile-d" data-card="4">
+        <div class="tip">🎴 Scratch D!</div>
+    </div>
+    <div class="scratch-zone tile-e" data-card="5">
+        <div class="tip">🎴 Scratch E!</div>
+    </div>
+
+    <!-- 🗺️ MAP CARD -->
+    <div class="hotspot map-zone" id="mapZone">
+        <div class="tip">🗺️ Our tiny world</div>
+    </div>
+
+    <!-- 🎙️ VOICE NOTE — plays inline, no modal -->
+    <div class="hotspot voice-zone" id="voiceZone">
+        <div class="voice-icon" id="voiceIcon">▶</div>
+        <div class="tip">🎙️ Tap to play voice note</div>
+    </div>
+</div>
+<audio id="voiceAudio" src="audio/voice.mp3"></audio>
+
+<!-- ════ LETTER MODAL ════ -->
+<div class="modal" id="letterModal">
+    <div class="letter-box">
+        <button class="letter-close" id="closeLetter">✕</button>
+        <span class="letter-flowers">🌸🌷🌹💐🌺</span>
+        <div class="letter-name">Sk. Arif 💌</div>
+        <div class="divider"></div>
+        <div class="letter-text">
+            <p>Happy Birthday, my dearest. ❤️</p>
+            <p>Some people enter our lives quietly, but somehow they change everything without even trying. You are that person for me. Before you, days were just days, but now even ordinary moments feel meaningful because you are a part of them. Your presence has become my favorite comfort, your smile my favorite view, and your happiness something I genuinely care about more than words can explain.</p>
+            <p>What I admire most about you is not just your beauty, but the way you carry kindness, strength, and warmth wherever you go. You have a way of making the world around you feel lighter. Even on difficult days, the thought of you brings a sense of peace that I never knew I needed.</p>
+            <p>On your birthday, I don't want to give you ordinary wishes. I wish for mornings that make you excited to wake up, for dreams that grow bigger with time, and for moments so beautiful that they stay in your heart forever. I hope life surprises you in the best possible ways and gives you countless reasons to smile.</p>
+        </div>
+        <div class="letter-sign">— With love always 💕</div>
+    </div>
+</div>
+
+<!-- ════ SCRATCH CARD MODAL ════ -->
+<div class="modal" id="scratchModal">
+    <div class="scratch-modal-box">
+        <button class="x-btn" id="closeScratch">✕</button>
+        <div class="scratch-title">🎴 Surprise Card <span id="cardNum">#1</span></div>
+        <div class="scratch-wrap">
+            <div class="scratch-reveal" id="scratchReveal">
+                <div class="reveal-placeholder" id="revealPlaceholder">
+                    <span class="big-icon">🎁</span>
+                    <p>Your surprise photo<br>will appear here!</p>
+                </div>
+                <img id="scratchImg" alt="Surprise photo">
+            </div>
+            <canvas class="sc" id="scratchCanvas" width="280" height="200"></canvas>
+        </div>
+        <p class="scratch-hint" id="scratchHint">🎨 Scratch to reveal your surprise!</p>
+    </div>
+</div>
+
+<!-- ════ MAP MODAL ("Our tiny world") ════ -->
+<div class="modal" id="mapModal">
+    <div class="map-box">
+        <button class="map-x" id="closeMap">✕</button>
+        <div class="map-photo-wrap">
+            <img src="images/map-location.jpg" alt="Our special place">
+        </div>
+        <div class="map-title">Our Tiny World 🌍</div>
+        <div class="map-caption">Every place feels like home when you're there with me. This little corner of the world is ours. 💚</div>
+    </div>
+</div>
+
+<!-- ════ CD MODAL ════ -->
+<div class="modal" id="cdModal">
+    <div class="cd-box">
+        <button class="x-btn" id="closeCd">✕</button>
+        <div class="cd-label">For You, My Angry Birdd 🩷</div>
+        <div class="cd-sub">A special mixtape just for you</div>
+        <div class="disc-wrap">
+            <div class="cd-disc" id="cdDisc">
+                <div class="cd-center"></div>
+            </div>
+            <div class="cd-needle" id="cdNeedle">
+                <div class="needle-arm"></div>
+            </div>
+        </div>
+        <button class="cd-play-btn" id="cdPlayBtn">▶</button>
+        <div class="cd-note">📁 Add: audio/song.mp3</div>
+        <audio id="cdAudio" src="audio/song.mp3"></audio>
+    </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   HELPER — open / close modal
+═══════════════════════════════════ */
+function openModal(id){ document.getElementById(id).classList.add('open') }
+function closeModal(id){ document.getElementById(id).classList.remove('open') }
+
+/* close on backdrop click */
+document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open') });
+});
+
+/* ═══════════════════════════════════
+   LETTER
+═══════════════════════════════════ */
+document.getElementById('letterZone').addEventListener('click', () => openModal('letterModal'));
+document.getElementById('closeLetter').addEventListener('click', () => closeModal('letterModal'));
+
+/* ═══════════════════════════════════
+   MAP ("Our tiny world")
+═══════════════════════════════════ */
+document.getElementById('mapZone').addEventListener('click', () => openModal('mapModal'));
+document.getElementById('closeMap').addEventListener('click', () => closeModal('mapModal'));
+
+/* ═══════════════════════════════════
+   SCRATCH CARDS
+═══════════════════════════════════ */
+const scratchCanvas = document.getElementById('scratchCanvas');
+const scratchReveal = document.getElementById('scratchReveal');
+const scratchHint   = document.getElementById('scratchHint');
+const cardNumEl     = document.getElementById('cardNum');
+let   sc_ctx, sc_drawing = false;
+
+document.querySelectorAll('.scratch-zone').forEach(zone => {
+    zone.addEventListener('click', () => {
+        const card = zone.dataset.card;
+        cardNumEl.textContent = '#' + card;
+        scratchHint.textContent = '🎨 Scratch to reveal your surprise!';
+
+        const img = document.getElementById('scratchImg');
+        const placeholder = document.getElementById('revealPlaceholder');
+        img.classList.remove('visible');
+        placeholder.classList.remove('hidden');
+        img.onload  = () => { img.classList.add('visible'); placeholder.classList.add('hidden'); };
+        img.onerror = () => { img.classList.remove('visible'); placeholder.classList.remove('hidden'); };
+        img.src = 'images/scratch' + card + '.jpg';
+
+        openModal('scratchModal');
+        setTimeout(initScratch, 60);
+    });
+});
+
+document.getElementById('closeScratch').addEventListener('click', () => closeModal('scratchModal'));
+
+function initScratch(){
+    const w = scratchCanvas.offsetWidth  || 280;
+    const h = scratchCanvas.offsetHeight || 200;
+    scratchCanvas.width  = w;
+    scratchCanvas.height = h;
+    sc_ctx = scratchCanvas.getContext('2d');
+    sc_ctx.globalCompositeOperation = 'source-over';
+
+    /* Gold gradient scratch layer */
+    const g = sc_ctx.createLinearGradient(0,0,w,h);
+    g.addColorStop(0,'#c8a96e');
+    g.addColorStop(0.5,'#e8c98e');
+    g.addColorStop(1,'#b89058');
+    sc_ctx.fillStyle = g;
+    sc_ctx.fillRect(0,0,w,h);
+
+    /* Decorative dots */
+    sc_ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    for(let i=0;i<50;i++){
+        sc_ctx.beginPath();
+        sc_ctx.arc(Math.random()*w, Math.random()*h, 2+Math.random()*3, 0, Math.PI*2);
+        sc_ctx.fill();
+    }
+
+    /* Text */
+    sc_ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    sc_ctx.font = 'bold 17px Arial';
+    sc_ctx.textAlign = 'center';
+    sc_ctx.fillText('✦  SCRATCH HERE  ✦', w/2, h/2 - 10);
+    sc_ctx.font = '13px Arial';
+    sc_ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    sc_ctx.fillText('to reveal your surprise!', w/2, h/2 + 14);
+
+    sc_drawing = false;
+}
+
+function doScratch(x, y){
+    if(!sc_ctx) return;
+    sc_ctx.globalCompositeOperation = 'destination-out';
+    sc_ctx.beginPath();
+    sc_ctx.arc(x, y, 22, 0, Math.PI*2);
+    sc_ctx.fill();
+    checkDone();
+}
+
+function checkDone(){
+    const data = sc_ctx.getImageData(0,0,scratchCanvas.width,scratchCanvas.height).data;
+    let clear = 0;
+    for(let i=3; i<data.length; i+=4){ if(data[i]<128) clear++ }
+    if(clear / (data.length/4) > 0.55){
+        sc_ctx.clearRect(0,0,scratchCanvas.width,scratchCanvas.height);
+        scratchHint.textContent = '🎉 Revealed!';
+    }
+}
+
+function getXY(e, canvas){
+    const r = canvas.getBoundingClientRect();
+    const sx = canvas.width  / r.width;
+    const sy = canvas.height / r.height;
+    if(e.touches){
+        return { x:(e.touches[0].clientX-r.left)*sx, y:(e.touches[0].clientY-r.top)*sy };
+    }
+    return { x:(e.clientX-r.left)*sx, y:(e.clientY-r.top)*sy };
+}
+
+scratchCanvas.addEventListener('mousedown',  e => { sc_drawing=true; const p=getXY(e,scratchCanvas); doScratch(p.x,p.y); });
+document.addEventListener    ('mouseup',     ()=> sc_drawing=false);
+scratchCanvas.addEventListener('mousemove',  e => { if(!sc_drawing) return; const p=getXY(e,scratchCanvas); doScratch(p.x,p.y); });
+scratchCanvas.addEventListener('touchstart', e => { e.preventDefault(); sc_drawing=true; const p=getXY(e,scratchCanvas); doScratch(p.x,p.y); });
+scratchCanvas.addEventListener('touchend',   e => { e.preventDefault(); sc_drawing=false; });
+scratchCanvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!sc_drawing) return; const p=getXY(e,scratchCanvas); doScratch(p.x,p.y); });
+
+/* ═══════════════════════════════════
+   VOICE NOTE — plays inline, no modal
+═══════════════════════════════════ */
+const voiceZone  = document.getElementById('voiceZone');
+const voiceIcon  = document.getElementById('voiceIcon');
+const voiceAudio = document.getElementById('voiceAudio');
+let voicePlaying = false;
+
+voiceZone.addEventListener('click', () => {
+    voicePlaying = !voicePlaying;
+    if(voicePlaying){
+        voiceIcon.textContent = '⏸';
+        voiceZone.classList.add('playing');
+        voiceAudio.play().catch(()=>{});
+    } else {
+        stopVoice();
+    }
+});
+
+voiceAudio.addEventListener('ended', stopVoice);
+
+function stopVoice(){
+    voicePlaying = false;
+    voiceIcon.textContent = '▶';
+    voiceZone.classList.remove('playing');
+    voiceAudio.pause();
+    voiceAudio.currentTime = 0;
+}
+
+/* ═══════════════════════════════════
+   CD PLAYER
+═══════════════════════════════════ */
+const cdDisc   = document.getElementById('cdDisc');
+const cdNeedle = document.getElementById('cdNeedle');
+const cdPlayBtn= document.getElementById('cdPlayBtn');
+const cdAudio  = document.getElementById('cdAudio');
+let   cdPlaying = false;
+
+document.getElementById('cdZone').addEventListener('click', () => openModal('cdModal'));
+document.getElementById('closeCd').addEventListener('click', () => {
+    closeModal('cdModal');
+    stopCd();
+});
+
+cdPlayBtn.addEventListener('click', () => {
+    cdPlaying = !cdPlaying;
+    if(cdPlaying){
+        cdPlayBtn.textContent = '⏸';
+        cdDisc.classList.add('spin');
+        cdNeedle.classList.add('on');
+        cdAudio.play().catch(()=>{});
+    } else { stopCd(); }
+});
+
+cdAudio.addEventListener('ended', stopCd);
+
+function stopCd(){
+    cdPlaying = false;
+    cdPlayBtn.textContent = '▶';
+    cdDisc.classList.remove('spin');
+    cdNeedle.classList.remove('on');
+    cdAudio.pause();
+    cdAudio.currentTime = 0;
+}
+</script>
+</body>
+</html>
